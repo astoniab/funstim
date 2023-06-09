@@ -1,7 +1,7 @@
 <div class="container">
   <h1>Convert funscript to phase modulated MP3</h1>
   <hr>
-  <h3>Settings</h3>
+  <h3>Global Settings</h3>
   <div class="row">
     <div class="form col-6">
       <div class="form-group">
@@ -34,6 +34,27 @@
           combine
         </small>
       </div>
+      <div class="form-check ml-2">
+        <input class="form-check-input" type="checkbox" id="polarity">
+        <label class="form-check-label">Inverted</label>
+      </div>
+      <div class="form-check ml-2">
+        <input class="form-check-input" type="checkbox" id="doubletime">
+        <label class="form-check-label">Double time (Every action is one full up & down motion)</label>
+      </div>
+      <div class="form-check ml-2">
+        <input class="form-check-input" checked type="checkbox" id="fullrange">
+        <label class="form-check-label">Expand to full range</label>
+      </div>
+      <div class="form-check ml-2">
+        <input class="form-check-input" checked type="checkbox" id="fadeonpause">
+        <label class="form-check-label">Fade out during pauses/slow sections</label>
+      </div>
+      <div class="form-check ml-2">
+        <input class="form-check-input" type="checkbox" id="debug">
+        <label class="form-check-label">Output amplitude & phase envelopes (FOR TESTING ONLY)</label>
+      </div>
+	  <h4>Funscript Conversion Settings</h4>
       <div class="form-group">
         <label class="form-label">This is to limit the volume of funscript at extremes (to reduce too strong
           sensations)</label>
@@ -107,33 +128,91 @@
           </tbody>
         </table>
       </div>
-      <div class="form-check ml-2">
-        <input class="form-check-input" type="checkbox" id="polarity">
-        <label class="form-check-label">Inverted</label>
-      </div>
-      <div class="form-check ml-2">
-        <input class="form-check-input" type="checkbox" id="doubletime">
-        <label class="form-check-label">Double time (Every action is one full up & down motion)</label>
-      </div>
-      <div class="form-check ml-2">
-        <input class="form-check-input" checked type="checkbox" id="fullrange">
-        <label class="form-check-label">Expand to full range</label>
-      </div>
-      <div class="form-check ml-2">
-        <input class="form-check-input" checked type="checkbox" id="fadeonpause">
-        <label class="form-check-label">Fade out during pauses/slow sections</label>
-      </div>
-      <div class="form-check ml-2">
-        <input class="form-check-input" type="checkbox" id="debug">
-        <label class="form-check-label">Output amplitude & phase envelopes (FOR TESTING ONLY)</label>
-      </div>
+	  <div class="row">
+	    <h4 class="col">Custom Generation Settings</h4>
+	  </div>
+	  <div class="row">
+		<div class="form-group col">
+			Generate output files for every combination of parameters between min and max.  Global settings from above are still in effect.
+		</div>
+	  </div>
+	  <div class="row">
+		  <div class="form-group col">
+			<label class="form-label">Min SPM</label>
+			<input class="form-control" type="number" min="0" id="minspm" value="30" title="Minimum Strokes Per Minute">
+		  </div>
+		  <div class="form-group col">
+			<label class="form-label">Max SPM</label>
+			<input class="form-control" type="number" min="0" id="maxspm" value="120" title="Maximum Strokes Per Minute">
+		  </div>
+		  <div class="form-group col">
+			<label class="form-label">Inc SPM</label>
+			<input class="form-control" type="number" min="0" id="incspm" value="30" title="Increment Strokes Per Minute">
+		  </div>
+	  </div>
+	  <div class="row">
+		  <div class="form-group col">
+			<label class="form-label">Min Pos</label>
+			<input class="form-control" type="number" min="0" max="100" id="minpos" value="0" title="Minimum Position">
+		  </div>
+		  <div class="form-group col">
+			<label class="form-label">Max Pos</label>
+			<input class="form-control" type="number" min="0" max="100" id="maxpos" value="100" title="Maximum Position">
+		  </div>
+		  <div class="form-group col">
+			<label class="form-label">Inc Pos</label>
+			<input class="form-control" type="number" min="0" max="100" id="incpos" value="10" title="Increment Position">
+		  </div>
+	  </div>
+	  <div class="form-group">
+			<label class="form-label">Custom Timing</label>
+			<small class="text-muted">overrides generation parameters above</small>
+			<div class="input-group">
+				<input class="form-control" type="text" id="customtiming" value="" title="Custom Timing" placeholder="time offset, position pairs - e.g. 500,20,1000,90">
+			</div>
+			<small class="form-text text-muted">Enter time offset (ms) and position pairs for each action separated by commas.  When the last action is reached, the cycle will start again at the beginning.</small>
+			<small class="form-text text-muted">Each pair can be further modified by appending a : and then an incrment modifier to adjust the value for the next cycle.  A second : and value can be added to stop the increment when a specific value is reached.  A third : and value (0 or 1) can be added to indicate if the increment should be reversed when the stop target is reached.  The reverse will continue until the inital value is reached and then reverse again continuing the cycle.</small>
+			<small class="form-text text-muted">e.g. "500,20:-1,1000:-10,80:+1:90:1" = 1st action at +500ms at position 20 then decrement position by 1, 2nd action at +1000ms at position 80, then decrement ms by 10 and increment position by 1 until it gets to 90 then reverse until it's back at 80</small>
+	  </div>
+	  <div class="row col-4">
+		  <div class="form-group">
+			<label class="form-label">Output Duration</label>
+			<div class="input-group">
+				<input class="form-control" type="text" id="duration" value="300" title="Duration in seconds">
+				<div class="input-group-append"><span class="input-group-text">sec</span></div>
+			</div>
+		  </div>
+	  </div>
     </div>
   </div>
   <hr>
   <h3>Select one or more .funscript file(s) to be rendered</h3>
   <input type="file" id="file-input" multiple>
   <hr>
+  <h3>Custom Output Generation</h3>
+	  <div class="form-group">
+		  <input type="button" id="generatecustom" value="Generate Custom">
+	  </div>
+  <hr>
   <div id="progress"></div>
+  <h3>Save/Load Settings</h3>
+  <div class="row">
+    <div class="form col-6">
+	  <div class="form-group">
+	    <div class="input-group">
+          <input class="form-control" type="text" id="settings" value="" title="Settings JSON object (Save/Load)" placeholder="Click Save and copy resulting text, or paste text and click Load">
+		</div>
+	  </div>
+	  <div class="form-group row">
+		<div class="col text-center">
+		  <input type="button" value="Save" id="savesettings">
+		</div>
+		<div class="col text-center">
+		  <input type="button" value="Load" id="loadsettings">
+		</div>
+	  </div>
+	</div>
+  </div>
 </div>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
   integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -143,7 +222,9 @@
   integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
   integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="mp3tag.min.js"></script>
 <script>
+
   function resetMapping(e) {
     document.getElementById('map_left_min').value = 100;
     document.getElementById('map_left_center').value = 100;
@@ -153,11 +234,33 @@
     document.getElementById('map_right_max').value = 100;
     document.getElementById('map_center_pos').value = 50;
   }
+  
+  // ArrayBuffer to Array
+  function arraybufftoarray(buf) {
+    let a=[];
+    a.push(buf);
+    return a;
+  }
+
+  // Iterable object to Array
+  function objtoarray(obj,arr) {  
+    arr = arr || [];
+    if(typeof(obj)==='number') {
+      arr.push(obj);
+    } else {
+      for(const prop in obj) {
+        objtoarray(obj[prop],arr);
+      }
+    }
+    return arr;
+  }
+  
   function updateRow(row, text, status, closeable) {
     row.className = "alert alert-" + status + " " + (closeable ? "alert-dismissible " : "") + "fade show";
     row.innerHTML = text + (closeable ? "<button type='button' class='close' data-dismiss='alert'><span>&times;</span></button>" : "");
   }
 
+  // create output based on existing funscript uploaded to script
   function readFiles(e) {
     let progress = document.getElementById('progress');
 
@@ -207,7 +310,13 @@
           updateRow(row, m.pctDone + "% - " + fileName, m.status, m.pctDone == 100);
 
           if (m.mp3Data) {
-            download(fileName + ".mp3", m.mp3Data);
+            const mp3tag = new MP3Tag(new Uint8Array(objtoarray(m.mp3Data)).buffer, true);
+            mp3tag.read();
+            if(mp3tag.error!='') throw new Error(mp3tag.error);
+            mp3tag.tags.v2={};
+            mp3tag.tags.v2.COMM=[{language: 'eng', descriptor: '', text: 'Converted from "'+file.name+'"'}];
+            mp3tag.save({strict:true, id3v2: { padding: 4096}});
+            download(fileName + ".mp3", arraybufftoarray(mp3tag.buffer));
           }
         };
 
@@ -223,8 +332,282 @@
 
     document.getElementById('file-input').value = "";
   }
+  
+  // create output from custom funscript
+  function createmp3(fsobj,fileName) {
+    let msg = {};
+    
+    let row = document.createElement('div');
+    updateRow(row, fileName, "primary", false);
+    progress.appendChild(row);
+    
+    msg.fade = document.getElementById('fade').value;
+    msg.sampleRate = document.getElementById('sampleRate').value;
+    msg.bitrate = 192;
+    msg.frequency = document.getElementById('frequency').value.split(",");
+    msg.amplitude = 0.9;
+    msg.polarity = document.getElementById('polarity').checked ? 1 : -1;
+    msg.doubletime = document.getElementById('doubletime').checked;
+    msg.fullrange = document.getElementById('fullrange').checked;
+    msg.fadeonpause = document.getElementById('fadeonpause').checked;
+    msg.debug = document.getElementById('debug').checked;
+    msg.volumeMap = {
+      center: 0.5,
+      left: { min: 1, center: 1, max: 1 },
+      right: { min: 1, center: 1, max: 1 }
+    };
+    msg.nor_min = 0;
+    msg.nor_max = 100;
+    
+    msg.funscript = fsobj;
+    
+    let worker = new Worker("funstim.js");
+    
+    worker.onmessage = m => {
+      m = m.data;
+      updateRow(row, m.pctDone + "% - " + fileName, m.status, m.pctDone == 100);
+      
+      if(m.mp3Data) {
+        const mp3tag = new MP3Tag(new Uint8Array(objtoarray(m.mp3Data)).buffer, true);
+        mp3tag.read();
+        if(mp3tag.error!='') throw new Error(mp3tag.error);
+        mp3tag.tags.v2={};
+        mp3tag.tags.v2.COMM=[{language: 'eng', descriptor: '', text: 'Custom generation by funstim script converter'}];
+        mp3tag.save({strict:true, id3v2: { padding: 4096}});
+        download(fileName + ".mp3", arraybufftoarray(mp3tag.buffer));
+      }
+    };
+    
+    worker.onerror = e => {
+    console.log(e);
+      updateRow(row, "Error - " + fileName + ": " + e.message, "danger", true);
+    };
+    
+    worker.postMessage(msg);
+  }
+  
+  // create custom funscript based on custom timing settings
+  function createcustomtimingfs(ct,duration)
+  {
+    let fs={};
+    fs.actions=[];
+    let ms=0;
+    ctpos=0;
+    do {
+      action={};
+      action.at=(ms+ct[ctpos].currentat);
+      action.pos=ct[ctpos].currentpos;
+      
+      fs.actions.push(action);
+      
+      ms+=ct[ctpos].currentat;
+      
+      if(ct[ctpos].incat) {
+        let inc=(ct[ctpos].incat*ct[ctpos].incatmult);
+        let minat=Math.max(Math.min(ct[ctpos].startat,ct[ctpos].stopat || ct[ctpos].startat),0);	// must be at least 0
+        let maxat=Math.max(Math.max(ct[ctpos].startat,ct[ctpos].stopat || ct[ctpos].startat),0);	// must be at least 0
+        ct[ctpos].currentat+=inc;
+        if(inc<0 && ct[ctpos].currentat<minat) {
+          ct[ctpos].currentat=minat;
+          if(ct[ctpos].revat && ct[ctpos].revat==1) {
+            ct[ctpos].incatmult=-ct[ctpos].incatmult;
+          }
+        }
+        else if(inc>0 && ct[ctpos].currentat>maxat) {
+          ct[ctpos].currentat=maxat;
+          if(ct[ctpos].revat && ct[ctpos].revat==1) {
+            ct[ctpos].incatmult=-ct[ctpos].incatmult;
+          }
+        }
+      }
+      
+      if(ct[ctpos].incpos)
+      {
+        let inc=(ct[ctpos].incpos*ct[ctpos].incposmult);
+        let minpos=Math.max(Math.min(ct[ctpos].startpos,ct[ctpos].stoppos || ct[ctpos].startpos),0);	// must be at least 0
+        let maxpos=Math.min(Math.max(ct[ctpos].startpos,ct[ctpos].stoppos || ct[ctpos].startpos),100);	// must be at most 100
+        ct[ctpos].currentpos+=inc;
+        if(inc<0 && ct[ctpos].currentpos<minpos) {
+          ct[ctpos].currentpos=minpos;
+          if(ct[ctpos].revpos && ct[ctpos].revpos==1) {
+            ct[ctpos].incposmult=-ct[ctpos].incposmult;
+          }
+        }
+        else if(inc>0 && ct[ctpos].currentpos>maxpos) {
+          ct[ctpos].currentpos=maxpos;
+          if(ct[ctpos].revpos && ct[ctpos].revpos==1) {
+            ct[ctpos].incposmult=-ct[ctpos].incposmult;
+          }
+        }
+      }
+      
+      ctpos++;
+      if(ctpos>=ct.length) {
+        ctpos=0;
+      }
+    }while(ms<=duration*1000);
+    return fs;
+  }
+  
+  function clickGenerate(e) {
+    let minspm=parseInt(document.getElementById('minspm').value);
+    let maxspm=parseInt(document.getElementById('maxspm').value);
+    let incspm=parseInt(document.getElementById('incspm').value);
+    let minpos=parseInt(document.getElementById('minpos').value);
+    let maxpos=parseInt(document.getElementById('maxpos').value);
+    let incpos=parseInt(document.getElementById('incpos').value);
+    let duration=parseInt(document.getElementById('duration').value);
+    let customtimingstr=document.getElementById('customtiming').value;
+    
+    customtiming=[];
+    if(customtimingstr!='') {
+      customtimingarr=customtimingstr.split(',');
+      for(let i=0; i<customtimingarr.length; i+=2) {
+        let atvals=customtimingarr[i].split(':');
+        let posvals=customtimingarr[i+1].split(':');
+        
+        let ct={};
+        
+        ct.startat=parseFloat(atvals[0]);
+        ct.currentat=parseFloat(atvals[0]);
+        if(atvals.length>1) {
+          ct.incat=parseFloat(atvals[1]);
+          ct.incatmult=1;
+        }
+        if(atvals.length>2) {
+          ct.stopat=parseFloat(atvals[2]);
+        }
+        if(atvals.length>3) {
+          ct.revat=parseInt(atvals[3]);
+        }
+        
+        ct.startpos=parseFloat(posvals[0]);
+        ct.currentpos=parseFloat(posvals[0]);
+        if(posvals.length>1) {
+          ct.incpos=parseFloat(posvals[1]);
+          ct.incposmult=1;
+        }
+        if(posvals.length>2) {
+          ct.stoppos=parseFloat(posvals[2]);
+        }
+        if(posvals.length>3) {
+          ct.revpos=parseInt(posvals[3]);
+        }
+        
+        customtiming.push(ct);
+      }
+    }
+    
+    if(minspm>maxspm) {
+      minspm=maxspm;
+    }
+    if(incspm<1) {
+      incspm=1;
+    }
+    if(minpos>maxpos) {
+      minpos=maxpos;
+    }
+	minpos=Math.min(Math.max(minpos,0),100);	// min pos between 0 and 100
+	maxpos=Math.min(Math.max(maxpos,0),100);	// max pos between 0 and 100
+    if(incpos<1) {
+      incpos=1;
+    }
+    
+    if(customtiming.length>0)
+    {
+      let fileName = 'custom_'+document.getElementById('frequency').value.split(",").join("_")+'hz_'+customtiming.length+'action';
+      createmp3(JSON.stringify(createcustomtimingfs(customtiming,duration)),fileName);
+    }
+    else
+    {
+    	for(let spm=minspm; spm<=maxspm; spm+=incspm)
+    	{
+    		for(let p1=minpos; p1<=maxpos; p1+=incpos)
+    		{
+    			for(let p2=p1+incpos; p2<=maxpos; p2+=incpos)
+    			{
+    				let actiontime=60000/(spm*2);
+    				let fs={};					// empty object to build the funscript data
+    				
+    				fs.actions=[];
+    
+    				console.log('spm='+spm+' '+p1+' - '+p2+'  at='+actiontime);
+    				
+    				let ms=0;	// current pos
+    				do
+    				{
+    					fs.actions.push({at:ms,pos:p1});
+    					fs.actions.push({at:(ms+actiontime),pos:p2});
+    					ms+=(actiontime*2);
+    				}while(ms<=duration*1000);
+    				
+    				let fileName = 'stroke_'+spm+'spm_'+document.getElementById('frequency').value.split(",").join("_")+'hz_'+p1+'_'+p2;
+    				createmp3(JSON.stringify(fs),fileName);
+    			}
+    		}
+    	}
+    }
+  }
+  
+  function clickSaveSettings(e)
+  {
+    inp=document.getElementsByTagName('input');
+    sel=document.getElementsByTagName('select');
+    
+    settings=[];
+    
+    for(let i=0; i<inp.length; i++)
+    {
+      if(((inp[i].type || '') !='button') && ((inp[i].type || '') !='file') && inp[i].id && inp[i].value && inp[i].id!='settings')
+      {
+        settings.push({id:inp[i].id,val:(inp[i].type=='checkbox' ? inp[i].checked : inp[i].value)});
+      }
+    }
+    for(let i=0; i<sel.length; i++)
+    {
+      if(sel[i].id && sel[i].value)
+      {
+        settings.push({id:sel[i].id,val:sel[i].value});
+      }
+    }
+    document.getElementById('settings').value=JSON.stringify(settings);
+  }
+  
+  function clickLoadSettings(e)
+  {
+    if(document.getElementById('settings').value=='') {
+	  alert('You must paste previously saved settings into the settings box to load them!');
+	  return;
+	}
+	
+	try {
+      settings=JSON.parse(document.getElementById('settings').value);
+	} catch(e) {
+	  alert('Unable to load settings.  Settings not in expected format.');
+	}
+	
+    for(let i=0; i<settings.length; i++)
+    {
+      el=document.getElementById(settings[i].id);
+      if(el)
+      {
+        if(el.type=='checkbox')
+        {
+          el.checked=settings[i].val;
+        }
+        else
+        {
+          el.value=settings[i].val;
+        }
+      }
+    }
+	
+  }
 
   document.getElementById('file-input').addEventListener('change', readFiles, false);
+  document.getElementById('generatecustom').addEventListener('click', clickGenerate, false);
+  document.getElementById('savesettings').addEventListener('click', clickSaveSettings, false);
+  document.getElementById('loadsettings').addEventListener('click', clickLoadSettings, false);
 
   function download(filename, text) {
     let blob = new Blob(text, {
