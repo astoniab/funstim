@@ -1,7 +1,8 @@
 <div class="container">
   <h1>Convert funscript to phase modulated MP3</h1>
+  <h4>Mods by <a href="https://github.com/astoniab/funstim/">astonia</a></h4>
   <hr>
-  <h3>Global Settings</h3>
+  <h3>Settings</h3>
   <div class="row">
     <div class="form col-6">
       <div class="form-group">
@@ -54,7 +55,6 @@
         <input class="form-check-input" type="checkbox" id="debug">
         <label class="form-check-label">Output amplitude & phase envelopes (FOR TESTING ONLY)</label>
       </div>
-	  <h4>Funscript Conversion Settings</h4>
       <div class="form-group">
         <label class="form-label">This is to limit the volume of funscript at extremes (to reduce too strong
           sensations)</label>
@@ -133,7 +133,7 @@
 	  </div>
 	  <div class="row">
 		<div class="form-group col">
-			Generate output files for every combination of parameters between min and max.  Global settings from above are still in effect.
+			Generate an output file for every combination of stroke parameters between min and max.  Settings from above are still in effect.
 		</div>
 	  </div>
 	  <div class="row">
@@ -165,13 +165,13 @@
 		  </div>
 	  </div>
 	  <div class="form-group">
-			<label class="form-label">Custom Timing</label>
+			<label class="form-label">Custom Stroke Timing</label>
 			<small class="text-muted">overrides generation parameters above</small>
 			<div class="input-group">
 				<input class="form-control" type="text" id="customtiming" value="" title="Custom Timing" placeholder="time offset, position pairs - e.g. 500,20,1000,90">
 			</div>
 			<small class="form-text text-muted">Enter time offset (ms) and position pairs for each action separated by commas.  When the last action is reached, the cycle will start again at the beginning.</small>
-			<small class="form-text text-muted">Each pair can be further modified by appending a : and then an incrment modifier to adjust the value for the next cycle.  A second : and value can be added to stop the increment when a specific value is reached.  A third : and value (0 or 1) can be added to indicate if the increment should be reversed when the stop target is reached.  The reverse will continue until the inital value is reached and then reverse again continuing the cycle.</small>
+			<small class="form-text text-muted">Each value in the pair can be further modified by appending a : and then an increment modifier to adjust the value for the next cycle.  A second : and value can be added to stop the increment when a specific value is reached.  A third : and value (0 or 1) can be added to indicate if the increment should be reversed when the stop target is reached.  The reverse will continue until the inital value is reached and then reverse again continuing the cycle.</small>
 			<small class="form-text text-muted">e.g. "500,20:-1,1000:-10,80:+1:90:1" = 1st action at +500ms at position 20 then decrement position by 1, 2nd action at +1000ms at position 80, then decrement ms by 10 and increment position by 1 until it gets to 90 then reverse until it's back at 80</small>
 	  </div>
 	  <div class="row col-4">
@@ -314,7 +314,7 @@
             mp3tag.read();
             if(mp3tag.error!='') throw new Error(mp3tag.error);
             mp3tag.tags.v2={};
-            mp3tag.tags.v2.COMM=[{language: 'eng', descriptor: '', text: 'Converted from "'+file.name+'"'}];
+            mp3tag.tags.v2.COMM=[{language: 'eng', descriptor: '', text: 'Converted from "'+file.name+'"\n'+getsettingsjson()}];
             mp3tag.save({strict:true, id3v2: { padding: 4096}});
             download(fileName + ".mp3", arraybufftoarray(mp3tag.buffer));
           }
@@ -334,7 +334,7 @@
   }
   
   // create output from custom funscript
-  function createmp3(fsobj,fileName) {
+  function createmp3(fsobj,fileName,comment) {
     let msg = {};
     
     let row = document.createElement('div');
@@ -356,8 +356,15 @@
       left: { min: 1, center: 1, max: 1 },
       right: { min: 1, center: 1, max: 1 }
     };
-    msg.nor_min = 0;
-    msg.nor_max = 100;
+    msg.volumeMap.center = document.getElementById('map_center_pos').value / 100.0;
+    msg.volumeMap.left.min = document.getElementById('map_left_min').value / 100.0;
+    msg.volumeMap.left.center = document.getElementById('map_left_center').value / 100.0;
+    msg.volumeMap.left.max = document.getElementById('map_left_max').value / 100.0;
+    msg.volumeMap.right.min = document.getElementById('map_right_min').value / 100.0;
+    msg.volumeMap.right.center = document.getElementById('map_right_center').value / 100.0;
+    msg.volumeMap.right.max = document.getElementById('map_right_max').value / 100.0;
+    msg.nor_min = document.getElementById('nor_min').value / 1.0;
+    msg.nor_max = document.getElementById('nor_max').value / 1.0;
     
     msg.funscript = fsobj;
     
@@ -372,7 +379,7 @@
         mp3tag.read();
         if(mp3tag.error!='') throw new Error(mp3tag.error);
         mp3tag.tags.v2={};
-        mp3tag.tags.v2.COMM=[{language: 'eng', descriptor: '', text: 'Custom generation by funstim script converter'}];
+        mp3tag.tags.v2.COMM=[{language: 'eng', descriptor: '', text: comment}];
         mp3tag.save({strict:true, id3v2: { padding: 4096}});
         download(fileName + ".mp3", arraybufftoarray(mp3tag.buffer));
       }
@@ -516,7 +523,7 @@
     if(customtiming.length>0)
     {
       let fileName = 'custom_'+document.getElementById('frequency').value.split(",").join("_")+'hz_'+customtiming.length+'action';
-      createmp3(JSON.stringify(createcustomtimingfs(customtiming,duration)),fileName);
+      createmp3(JSON.stringify(createcustomtimingfs(customtiming,duration)),fileName,'Custom generation by funstim script converter\n'+getsettingsjson());
     }
     else
     {
@@ -542,14 +549,14 @@
     				}while(ms<=duration*1000);
     				
     				let fileName = 'stroke_'+spm+'spm_'+document.getElementById('frequency').value.split(",").join("_")+'hz_'+p1+'_'+p2;
-    				createmp3(JSON.stringify(fs),fileName);
+    				createmp3(JSON.stringify(fs),fileName,'Custom generation by funstim script converter\n'+getsettingsjson());
     			}
     		}
     	}
     }
   }
   
-  function clickSaveSettings(e)
+  function getsettingsjson()
   {
     inp=document.getElementsByTagName('input');
     sel=document.getElementsByTagName('select');
@@ -570,7 +577,12 @@
         settings.push({id:sel[i].id,val:sel[i].value});
       }
     }
-    document.getElementById('settings').value=JSON.stringify(settings);
+    return JSON.stringify(settings);
+  }
+  
+  function clickSaveSettings(e)
+  {
+    document.getElementById('settings').value=getsettingsjson();
   }
   
   function clickLoadSettings(e)
