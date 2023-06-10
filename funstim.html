@@ -210,6 +210,9 @@
 		<div class="col text-center">
 		  <input type="button" value="Load" id="loadsettings">
 		</div>
+		<div class="col text-center">
+		  <input type="button" value="Copy URL" id="copyurl">
+		</div>
 	  </div>
 	</div>
   </div>
@@ -563,30 +566,24 @@
     
     settings=[];
     
-    for(let i=0; i<inp.length; i++)
-    {
-      if(((inp[i].type || '') !='button') && ((inp[i].type || '') !='file') && inp[i].id && inp[i].value && inp[i].id!='settings')
-      {
+    for(let i=0; i<inp.length; i++) {
+      if(((inp[i].type || '') !='button') && ((inp[i].type || '') !='file') && inp[i].id && inp[i].value && inp[i].id!='settings') {
         settings.push({id:inp[i].id,val:(inp[i].type=='checkbox' ? inp[i].checked : inp[i].value)});
       }
     }
-    for(let i=0; i<sel.length; i++)
-    {
-      if(sel[i].id && sel[i].value)
-      {
+    for(let i=0; i<sel.length; i++) {
+      if(sel[i].id && sel[i].value) {
         settings.push({id:sel[i].id,val:sel[i].value});
       }
     }
     return JSON.stringify(settings);
   }
   
-  function clickSaveSettings(e)
-  {
+  function clickSaveSettings(e) {
     document.getElementById('settings').value=getsettingsjson();
   }
   
-  function clickLoadSettings(e)
-  {
+  function clickLoadSettings(e) {
     if(document.getElementById('settings').value=='') {
 	  alert('You must paste previously saved settings into the settings box to load them!');
 	  return;
@@ -601,25 +598,45 @@
     for(let i=0; i<settings.length; i++)
     {
       el=document.getElementById(settings[i].id);
-      if(el)
-      {
-        if(el.type=='checkbox')
-        {
+      if(el) {
+        if(el.type=='checkbox') {
           el.checked=settings[i].val;
         }
-        else
-        {
+        else {
           el.value=settings[i].val;
         }
       }
     }
 	
   }
+  
+  function clickCopyURL(e) {
+	let url = new URL(document.URL);
+	let params = new URLSearchParams(url.search);
+	params.set('settings', getsettingsjson());
+	url.search=params.toString();
+	
+	let origval=document.getElementById('settings').value;
+	document.getElementById('settings').value=url;
+	document.getElementById('settings').select();
+	document.execCommand('copy');
+	document.getElementById('settings').value=origval;
+  }
 
   document.getElementById('file-input').addEventListener('change', readFiles, false);
   document.getElementById('generatecustom').addEventListener('click', clickGenerate, false);
   document.getElementById('savesettings').addEventListener('click', clickSaveSettings, false);
   document.getElementById('loadsettings').addEventListener('click', clickLoadSettings, false);
+  document.getElementById('copyurl').addEventListener('click', clickCopyURL, false);
+  
+  let url=new URL(document.URL);
+  if(url.search) {
+    let params=new URLSearchParams(url.search);
+	if(params.get('settings')) {
+	  document.getElementById('settings').value=params.get('settings');
+	  clickLoadSettings();
+	}
+  }
 
   function download(filename, text) {
     let blob = new Blob(text, {
