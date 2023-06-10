@@ -171,7 +171,7 @@
 				<input class="form-control" type="text" id="customtiming" value="" title="Custom Timing" placeholder="time offset, position pairs - e.g. 500,20,1000,90">
 			</div>
 			<small class="form-text text-muted">Enter time offset (ms) and position pairs for each action separated by commas.  When the last action is reached, the cycle will start again at the beginning.</small>
-			<small class="form-text text-muted">Each value in the pair can be further modified by appending a : and then an increment modifier to adjust the value for the next cycle.  A second : and value can be added to stop the increment when a specific value is reached.  A third : and value (0 or 1) can be added to indicate if the increment should be reversed when the stop target is reached.  The reverse will continue until the inital value is reached and then reverse again continuing the cycle.</small>
+			<small class="form-text text-muted">Each value in the pair can be further modified by appending a : and then an increment modifier to adjust the value for the next cycle.  A second : and value can be added to stop the increment when a specific value is reached.  A third : and value (0, 1, or 2) can be added to indicate if the increment should be reversed or start over when the stop target is reached.  0 means the value will stop incrementing, 1 means the increment will be reversed until it's back to the original value (and then continue reversing between the values), and 2 means it will jump back to the original value and continue incrementing from there.</small>
 			<small class="form-text text-muted">e.g. "500,20:-1,1000:-10,80:+1:90:1" = 1st action at +500ms at position 20 then decrement position by 1, 2nd action at +1000ms at position 80, then decrement ms by 10 and increment position by 1 until it gets to 90 then reverse until it's back at 80</small>
 	  </div>
 	  <div class="row col-4">
@@ -427,7 +427,9 @@
           ct[ctpos].currentat=maxat;
           if(ct[ctpos].revat && ct[ctpos].revat==1) {
             ct[ctpos].incatmult=-ct[ctpos].incatmult;
-          }
+          } else if(ct[ctpos].revat && ct[ctpos].revat==2) {
+		    ct[ctpos].currentat=ct[ctpos].startat;
+		  }
         }
       }
       
@@ -447,7 +449,9 @@
           ct[ctpos].currentpos=maxpos;
           if(ct[ctpos].revpos && ct[ctpos].revpos==1) {
             ct[ctpos].incposmult=-ct[ctpos].incposmult;
-          }
+          } else if(ct[ctpos].revpos && ct[ctpos].revpos==2) {
+		    ct[ctpos].currentpos=ct[ctpos].startpos;
+		  }
         }
       }
       
