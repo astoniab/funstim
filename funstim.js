@@ -124,6 +124,10 @@ onmessage = e => {
                 amp = (amp + ampFilter * (filterLength - 1)) / filterLength;
             }
 
+            if (sample >= totalSamples) {
+                amp = 0;
+            }
+
             ampFilter = amp;
             let lVol = getVolume(pos, volumeMap.left);
             let rVol = getVolume(pos, volumeMap.right);
