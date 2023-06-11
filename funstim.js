@@ -57,7 +57,8 @@ onmessage = e => {
     let samplesPerMs = e.sampleRate / 1000;
     let normalSamples = length * samplesPerMs;
     let fadeSamples = e.fade * samplesPerMs;
-    let totalSamples = normalSamples + fadeSamples * 2;
+    //let totalSamples = normalSamples + fadeSamples * 2;
+    let totalSamples = normalSamples;						// fade won't "add" samples to output anymore.  Output length will match funscript end length
     let sample = 0;
     let actionIndex = 0;
 
@@ -110,10 +111,11 @@ onmessage = e => {
                 amp = 1;
             }
 
+            // fade at beginning and end of file (if selected).
             if (sample < fadeSamples) {
                 amp = Math.min(amp, sample / fadeSamples);
-            } else if (sample >= normalSamples) {
-                amp = Math.max(0, Math.min(amp, 1 - (sample - normalSamples) / fadeSamples));
+            } else if (sample >= (normalSamples - fadeSamples)) {
+                amp = Math.max(0, Math.min(amp, (normalSamples - sample) / fadeSamples));
             }
 
             let filterLength = (e.sampleRate * e.fade) / 1000;
